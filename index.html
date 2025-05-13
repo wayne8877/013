@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>生产通知单</title>
+    <style>
+        body {
+            font-family: SimSun, serif;
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        }
+        #form-container {
+            width: 2200px;
+            margin: 20px auto;
+            position: relative;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 49px;
+            margin-bottom: 10px;
+        }
+
+        .top-fields-complex-grid {
+            display: grid;
+            grid-template-columns: repeat(12, [col-start] 1fr);
+            grid-auto-rows: min-content;
+            grid-gap: 8px 15px;
+            margin-bottom: 25px;
+            padding-left: 0.5%;
+            padding-right: 0.5%;
+        }
+
+        .tf-item {
+            display: flex;
+            align-items: center;
+        }
+        .tf-item label {
+            font-size: 34px;
+            margin-right: 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tf-item input[type="text"],
+        .tf-item input[type="date"] {
+            font-size: 30px;
+            padding: 5px; /* General padding */
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            flex-grow: 1;
+            min-width: 150px;
+            text-align: center; /* Point 1: Align text center */
+            font-family: SimSun, serif;
+        }
+
+        .tf-order-no     { grid-column: col-start 1 / span 3; grid-row: 1; }
+        .tf-order-date   { grid-column: col-start 1 / span 3; grid-row: 2; }
+        .tf-department   { grid-column: col-start 1 / span 3; grid-row: 3; }
+        .tf-customer     { grid-column: col-start 4 / span 3; grid-row: 3; }
+        .tf-cust-po      { grid-column: col-start 7 / span 3; grid-row: 3; }
+        .tf-delivery-date{ grid-column: col-start 10 / span 3; grid-row: 3; }
+        .tf-prod-no      { grid-column: col-start 10 / span 3; grid-row: 2; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center; /* Default for th/td content */
+            vertical-align: middle; /* Ensure vertical centering for cell content */
+            height: auto;
+            min-height: 60px;
+            font-size: 34px;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        td input[type="text"],
+        td input[type="date"],
+        td textarea {
+            width: 98%;
+            border: 1px solid #ccc;
+            font-size: 30px;
+            box-sizing: border-box;
+            padding: 5px; /* General padding */
+            margin: 0;
+            text-align: center; /* Point 1: Align text center */
+            font-family: SimSun, serif;
+            background-color: white;
+        }
+
+        table th:nth-of-type(1), table td:nth-of-type(1) { width: 7%; }
+        table th:nth-of-type(2), table td:nth-of-type(2) { width: 7%; }
+        table th:nth-of-type(3), table td:nth-of-type(3) { width: 10%; }
+        table th:nth-of-type(4), table td:nth-of-type(4) { width: 4.8%; }
+        table th:nth-of-type(5), table td:nth-of-type(5) { width: 4.8%; }
+        table th:nth-of-type(6), table td:nth-of-type(6) { width: 4.8%; }
+        table th:nth-of-type(7), table td:nth-of-type(7) { width: 4.8%; }
+        table th:nth-of-type(8), table td:nth-of-type(8) { width: 7%; }
+        table td:nth-of-type(9) { width: 6%; }
+        table td:nth-of-type(10) { width: 6%; }
+        table td:nth-of-type(11) { width: 8%; }
+        table td:nth-of-type(12) { width: 8%; }
+        thead tr:first-child th:nth-of-type(9) { width: 12%; }
+        thead tr:nth-child(2) th:nth-of-type(1) { width: 6%; }
+        thead tr:nth-child(2) th:nth-of-type(2) { width: 6%; }
+
+        .form-section {
+            margin-top: 20px;
+            padding: 15px 0;
+        }
+        .bordered-section {
+            border: 1px solid black;
+            padding: 15px;
+        }
+        .fields-row {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .field-container {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        .field-container:last-child {
+            margin-right: 0;
+        }
+        .field-container.notes-container {
+            align-items: flex-start;
+        }
+        .field-container label {
+             font-size: 34px;
+             margin-right: 8px;
+             white-space: nowrap;
+             flex-shrink: 0;
+        }
+        .field-container input[type="text"] { /* Specific for bottom general inputs */
+            font-size: 30px;
+            padding: 5px; /* General padding */
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            flex-grow: 1;
+            text-align: center; /* Point 1: Align text center */
+            font-family: SimSun, serif;
+        }
+        .field-container textarea { /* Specific for 注意事项 textarea */
+            font-size: 30px; /* Initial font size, will be managed by JS */
+            padding: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            flex-grow: 1;
+            height: 180px;
+            resize: none;
+            text-align: center; /* Point 1: Align text center */
+            font-family: SimSun, serif;
+            overflow-y: auto; /* Add scroll if content exceeds even with smaller font */
+        }
+
+        .notes-container { flex: 2; }
+        .total-amount-container { flex: 1; }
+        .sample-container { flex: 1; }
+        .business-container { flex: 1; margin-right: 15px !important; }
+        .audit-container { flex: 1; }
+
+        .submit-button-class {
+            font-size: 30px;
+            padding: 5px 15px;
+            margin-left: 15px;
+            align-self: center;
+            height: fit-content;
+            border: 1px solid #666;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            font-family: SimSun, serif;
+        }
+        .submit-button-class:hover {
+            background-color: #e0e0e0;
+        }
+
+        .html2canvas-capture-mode td input[type="text"],
+        .html2canvas-capture-mode td input[type="date"],
+        .html2canvas-capture-mode td textarea {
+            border: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+            color: black !important;
+        }
+        .html2canvas-capture-mode .submit-button-class {
+            display: none !important;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="form-container">
+        <form id="myForm">
+            <div class="header">
+                <h1>生产通知单</h1>
+            </div>
+
+            <div class="top-fields-complex-grid">
+                <div class="tf-item tf-order-no"><label>订单号码:</label><input type="text"></div>
+                <div class="tf-item tf-prod-no"><label>生产单号:</label><input type="text"></div>
+                <div class="tf-item tf-order-date"><label>日 期:</label><input type="date"></div>
+                <div class="tf-item tf-department"><label>部门:</label><input type="text"></div>
+                <div class="tf-item tf-customer"><label>客户:</label><input type="text"></div>
+                <div class="tf-item tf-cust-po"><label>客订单号:</label><input type="text"></div>
+                <div class="tf-item tf-delivery-date"><label>交货日期:</label><input type="date"></div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">配方编号</th> <th rowspan="2">车刀编号</th> <th rowspan="2">品名</th>
+                        <th rowspan="2">尺寸</th> <th rowspan="2">胚厚</th> <th rowspan="2">光度</th>
+                        <th rowspan="2">单价</th> <th rowspan="2">生产数量</th>
+                        <th colspan="2">原料</th>
+                        <th rowspan="2">制胚签名</th> <th rowspan="2">改机签名</th>
+                    </tr>
+                    <tr>
+                        <th>KG</th> <th>片数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td colspan="2" style="font-size: 30px; text-align: center; vertical-align: middle;">品检签名</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td colspan="2"><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td colspan="2"><input type="text"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td><td><input type="text"></td><td><input type="text"></td>
+                        <td><input type="text"></td>
+                        <td colspan="2"><input type="text"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="form-section bordered-section">
+                <div class="fields-row">
+                    <div class="field-container notes-container">
+                        <label>注意事项:</label>
+                        <textarea id="notesTextarea"></textarea>
+                    </div>
+                    <div class="field-container total-amount-container">
+                        <label>总金额:</label>
+                        <input type="text">
+                    </div>
+                    <div class="field-container sample-container">
+                        <label>贴样:</label>
+                        <input type="text">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="fields-row" style="align-items: center; justify-content: flex-start;">
+                    <div class="field-container business-container">
+                        <label>业务:</label>
+                        <input type="text">
+                    </div>
+                    <div class="field-container audit-container">
+                        <label>复核:</label>
+                        <input type="text">
+                    </div>
+                    <button type="submit" class="submit-button-class">提交</button>
+                    <div style="flex-grow: 1;"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Point 3: Dynamic font size for 注意事项
+            const notesTextarea = document.getElementById('notesTextarea');
+            if (notesTextarea) {
+                const initialFontSize = 30; // Current default from CSS
+                const minFontSize = 16;
+                const maxFontSize = 50;
+                const thresholdSmall = 20; // Less than this many chars = max font size
+                const thresholdLarge = 100; // More than this many chars = min font size
+
+                notesTextarea.addEventListener('input', function() {
+                    const textLength = this.value.length;
+                    let newFontSize = initialFontSize;
+
+                    if (textLength === 0) {
+                        newFontSize = initialFontSize;
+                    } else if (textLength < thresholdSmall) {
+                        newFontSize = maxFontSize;
+                    } else if (textLength > thresholdLarge) {
+                        newFontSize = minFontSize;
+                    } else { // Between thresholdSmall and thresholdLarge
+                        newFontSize = initialFontSize; // Use initial as medium
+                    }
+                    this.style.fontSize = newFontSize + 'px';
+                });
+                // Optional: Trigger once on load if there's pre-filled text (not applicable here)
+            }
+
+            // Form submission logic
+            const myForm = document.getElementById('myForm');
+            if (myForm) {
+                myForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formContainer = document.getElementById('form-container');
+                    formContainer.classList.add('html2canvas-capture-mode');
+
+                    setTimeout(function() {
+                        html2canvas(formContainer, {
+                            scale: 1,
+                            logging: false
+                        }).then(function(canvas) {
+                            formContainer.classList.remove('html2canvas-capture-mode');
+                            var link = document.createElement('a');
+                            link.download = 'production_notice.jpg';
+                            link.href = canvas.toDataURL('image/jpeg', 0.95);
+                            link.click();
+                        }).catch(function(error) {
+                            formContainer.classList.remove('html2canvas-capture-mode');
+                            console.error('Error capturing image:', error);
+                        });
+                    }, 100);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
